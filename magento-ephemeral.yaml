@@ -1,0 +1,200 @@
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: Ephemeral WordPress content management system (CMS)
+  name: 1and1-wordpress-apache-ephemeral
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      service: wordpress
+    name: ${APP_SERVICE_NAME}
+  spec:
+    ports:
+    - name: ${APP_SERVICE_NAME}
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      name: ${APP_SERVICE_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${APP_SERVICE_NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${APP_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Definition for deploying the WordPres
+    labels:
+      service: wordpress-apache
+    name: ${APP_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${APP_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${APP_SERVICE_NAME}
+          service: wordpress-apache
+        name: ${APP_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: WORDPRESS_DB_HOST
+            value: ${DATABASE_SERVICE_NAME}
+          - name: WORDPRESS_DB_USER
+            value: wordpress
+          - name: WORDPRESS_DB_PASSWORD
+            value: ${DEFAULT_DATABASE_PASSWORD}
+          - name: WORDPRESS_DB_NAME
+            value: wordpress
+          image: 1and1internet/docker-ubuntu-16-apache-2.4-php-5.6-wordpress
+          imagePullPolicy: Always
+          name: ${APP_SERVICE_NAME}
+          ports:
+          - containerPort: 8080
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: wordpress-data
+        volumes:
+        - emptyDir:
+            medium: ""
+          name: wordpress-data
+    triggers:
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      service: mariadb
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: ${DATABASE_SERVICE_NAME}
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Definition for deploying the Database
+    labels:
+      service: mariadb
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+          service: mariadb
+        name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_USER
+            value: wordpress
+          - name: MYSQL_PASSWORD
+            value: ${DEFAULT_DATABASE_PASSWORD}
+          - name: MYSQL_DATABASE
+            value: wordpress
+          - name: MYSQL_ROOT_PASSWORD
+            value: ${DATABASE_ADMIN_PASSWORD}
+          - name: DATABASE_ADMIN_PASSWORD
+            value: ${DATABASE_ADMIN_PASSWORD}
+          image: 1and1internet/ubuntu-16-mariadb-10.0
+          imagePullPolicy: Always
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 3306
+            timeoutSeconds: 1
+          name: ${DATABASE_SERVICE_NAME}
+          ports:
+          - containerPort: 3306
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE
+                -e 'SELECT 1'
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/mysql/data
+            name: ${DATABASE_SERVICE_NAME}-data
+        volumes:
+        - emptyDir:
+            medium: ""
+          name: ${DATABASE_SERVICE_NAME}-data
+    triggers:
+    - type: ConfigChange
+parameters:
+- description: The linux user ID number which everything must run under
+  displayName: Linux user ID number
+  name: UID
+- description: The exposed hostname that routes to the admin interface for the database
+  displayName: Database admin URL hostname
+  name: DATABASE_ADMIN_URL_HOSTNAME
+- description: Password for the WordPress database user
+  displayName: Database password
+  from: '[a-zA-Z0-9]{24}'
+  generate: expression
+  name: DEFAULT_DATABASE_PASSWORD
+  required: true
+- description: Password for the database admin user which you can use to administer
+    the database
+  displayName: Database administrator password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: DATABASE_ADMIN_PASSWORD
+  required: true
+- description: Application service name
+  displayName: Application service name
+  from: php[0-9]{3}
+  generate: expression
+  name: APP_SERVICE_NAME
+  required: true
+- description: Database service name
+  displayName: Database service name
+  from: mysql[0-9]{3}
+  generate: expression
+  name: DATABASE_SERVICE_NAME
+  required: true
+- description: Database admin service name
+  displayName: Database admin service name
+  from: dbadmin[0-9]{3}
+  generate: expression
+  name: DATABASE_ADMIN_SERVICE_NAME
+  required: true
+- description: Wordpress default URL
+  displayname: Website URL
+  name: APPLICATION_DOMAIN

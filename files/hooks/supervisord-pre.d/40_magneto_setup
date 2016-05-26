@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ -z "$MYSQL_PASSWORD" ]; then
+  echo >&2 "Error MYSQL_PASSWORD Undefined"
+  exit 1
+fi
+
+if [ -z "$MYSQL_USER" ]; then
+  echo >&2 "Error MYSQL_USER Undefined"
+  exit 1
+fi
+
+if [ -z "$MYSQL_DATABASE" ]; then
+  echo >&2 "Error MYSQL_DATABASE Undefined"
+  exit 1
+fi
+
+if [ -z "$MYSQL_HOST" ]; then
+  echo >&2 "Error MYSQL_HOST Undefined"
+  exit 1
+fi
+
+if ! [ -e "/var/www/html/Gruntfile.js" ]; then
+  echo >&2 "Magento not found in /var/www/html - Installing!"
+  #TODO:  Look for a better file than Gruntfile.js?  Couldn't find a specific version file to check
+  cd /var/www/html ; tar -jxpf /usr/src/Magento-CE-2.0.5+sample_data-2016-04-28-02-16-15.tar.bz2
+  #chown -R www-data. /var/www/html/*
+  #Configure Database
+  echo "DB Details:  $MYSQL_USER [ $MYSQL_PASSWORD ] @ $MYSQL_HOST"
+  echo -n "Pre-configuring Magento DB Config... "
+  sed -i -e "s/host: 'localhost'/host: '$MYSQL_HOST'/g" /var/www/html/setup/pub/magento/setup/add-database.js
+  sed -i -e "/user: 'root'/a\            password: '$MYSQL_PASSWORD'," /var/www/html/setup/pub/magento/setup/add-database.js
+  sed -i -e "s/user: 'root'/user: '$MYSQL_USER'/g" /var/www/html/setup/pub/magento/setup/add-database.js
+  echo " [DONE ]"
+  #echo "Pre-configuring Magento settings... "
+  #cd /var/www/html ; php bin/magento setup:static-content:deploy en_US en_GB de_DE es_ES
+  #echo "Fixing Magentos stupid permissions... (Remove when not root!)"
+  #chown -R www-data. /var/www/html
+  
+  
+else
+  echo "Magento already installed - not touching"
+fi
+
