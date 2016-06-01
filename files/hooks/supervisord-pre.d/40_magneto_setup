@@ -26,8 +26,9 @@ if ! [ -e "/var/www/html/Gruntfile.js" ]; then
   cd /var/www/html ; tar -jxpf /usr/src/Magento-CE-2.0.5+sample_data-2016-04-28-02-16-15.tar.bz2
   #chown -R www-data. /var/www/html/*
   #Configure Database
-  echo "DB Details:  $MYSQL_USER [ $MYSQL_PASSWORD ] @ $MYSQL_HOST"
+  echo "DB Details: $MYSQL_DATABASE $MYSQL_USER [ $MYSQL_PASSWORD ] @ $MYSQL_HOST"
   echo -n "Pre-configuring Magento DB Config... "
+  sed -i -e "s/name: 'magento'/name: '$MYSQL_DATABASE'/g" /var/www/html/setup/pub/magento/setup/add-database.js
   sed -i -e "s/host: 'localhost'/host: '$MYSQL_HOST'/g" /var/www/html/setup/pub/magento/setup/add-database.js
   sed -i -e "/user: 'root'/a\            password: '$MYSQL_PASSWORD'," /var/www/html/setup/pub/magento/setup/add-database.js
   sed -i -e "s/user: 'root'/user: '$MYSQL_USER'/g" /var/www/html/setup/pub/magento/setup/add-database.js

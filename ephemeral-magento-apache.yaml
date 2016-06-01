@@ -59,11 +59,11 @@ objects:
             privileged: false
           terminationMessagePath: /dev/termination-log
           volumeMounts:
-          - mountPath: /var/lib/mysql/
+          - mountPath: /var/lib/mysql
             name: ${DATABASE_SERVICE_NAME}-data
         restartPolicy: Always
         securityContext:
-          runAsUser: 1000660000
+          runAsUser: ${OPENSHIFT_USER}
         volumes:
         - emptyDir:
             medium: ""
@@ -112,7 +112,7 @@ objects:
             name: magento-data
         restartPolicy: Always
         securityContext:
-          runAsUser: 1000660000 
+          runAsUser: ${OPENSHIFT_USER}
         volumes:
         - emptyDir:
             medium: ""
@@ -208,4 +208,7 @@ parameters:
   from: '[a-zA-Z0-9]{16}'
   generate: expression
   name: DATABASE_ADMIN_PASSWORD
+  required: true
+- description: Openshift user
+  dislayName: Openshift user
   required: true
