@@ -211,4 +211,5 @@ parameters:
   required: true
 - description: Openshift user
   dislayName: Openshift user
+  name: OPENSHIFT_USER
   required: true
