@@ -132,6 +132,18 @@ objects:
       kind: Service
       name: ${APP_SERVICE_NAME}
 - apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    host: ${DATABASE_ADMIN_DOMAIN}
+    port:
+      targetPort: 8080
+      protocol: TCP
+    to:
+      kind: Service
+      name: ${DATABASE_SERVICE_NAME}
+- apiVersion: v1
   kind: Service
   metadata:
     labels:
@@ -212,4 +224,8 @@ parameters:
 - description: Openshift user
   dislayName: Openshift user
   name: OPENSHIFT_USER
+  required: true
+- description: Database Admin URL
+  displayname: Database Admin URL
+  name: DATABASE_ADMIN_DOMAIN
   required: true
