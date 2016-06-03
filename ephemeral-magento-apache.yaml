@@ -3,7 +3,7 @@ kind: Template
 metadata:
   annotations:
     description: Ephemeral WordPress content management system (CMS)
-  name: jp-1and1-magento-apache-ephemeral
+  name: 1and1-magento-apache-mysql-ephemeral
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
