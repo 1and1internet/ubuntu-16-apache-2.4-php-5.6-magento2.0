@@ -36,7 +36,7 @@ objects:
             value: ${DATABASE_ADMIN_PASSWORD}
           - name: MYSQL_USER
             value: ${MAGENTO_DB_USER}
-          image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:unstable 
+          image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:latest
           imagePullPolicy: Always
           name: ${DATABASE_SERVICE_NAME}
           ports:
@@ -101,7 +101,7 @@ objects:
             value: ${MAGENTO_DB_USER}
           - name: MYSQL_PASSWORD
             value: ${MAGENTO_DB_PASSWORD}
-          image: 1and1internet/ubuntu-16-apache-2.4-php-5.6-magento2.0:unstable
+          image: 1and1internet/ubuntu-16-apache-2.4-php-5.6-magento2.0:latest
           imagePullPolicy: Always
           name: ${APP_SERVICE_NAME}
           ports:
