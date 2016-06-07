@@ -1,11 +1,11 @@
 require 'serverspec'
 require 'docker'
 
-MYSQL_ROOT_PASSWORD="super-secret-password"
-MYSQL_USER="fhmagentotest"
-MYSQL_PASSWORD="super-secret-password1"
-MYSQL_DATABASE="fhmagentotest"
-MYSQL_HOST="mysqltesting"
+#MYSQL_ROOT_PASSWORD="super-secret-password"
+#MYSQL_USER="fhmagentotest"
+#MYSQL_PASSWORD="super-secret-password1"
+#MYSQL_DATABASE="fhmagentotest"
+#MYSQL_HOST="mysqltesting"
 
 #Include Tests
 base_spec_dir = Pathname.new(File.join(File.dirname(__FILE__)))
@@ -15,23 +15,23 @@ if not ENV['IMAGE'] then
   puts "You must provide an IMAGE env variable"
 end
 
-@network = Docker::Network.create "wordpresstest"
-@mysqlimage = Docker::Image.create('fromImage' => 'mysql:latest')
-@container = Docker::Container.create(
-  'name'           => MYSQL_HOST,
-  'Image'          => @mysqlimage.id,
-  'Config'         => { "Hostname" => "#{MYSQL_HOST}"},
-  'HostConfig'     => {
-     'NetworkMode' => @network.info["Name"],
-  },
-  'Env'            => [
-    "MYSQL_ROOT_PASSWORD=#{MYSQL_ROOT_PASSWORD}",
-    "MYSQL_USER=#{MYSQL_USER}",
-    "MYSQL_PASSWORD=#{MYSQL_PASSWORD}",
-    "MYSQL_DATABASE=#{MYSQL_DATABASE}"
-  ]
-)
-@container.start
+#@network = Docker::Network.create "wordpresstest"
+#@mysqlimage = Docker::Image.create('fromImage' => 'mysql:latest')
+#@container = Docker::Container.create(
+#  'name'           => MYSQL_HOST,
+#  'Image'          => @mysqlimage.id,
+#  'Config'         => { "Hostname" => "#{MYSQL_HOST}"},
+#  'HostConfig'     => {
+#     'NetworkMode' => @network.info["Name"],
+#  },
+#  'Env'            => [
+#    "MYSQL_ROOT_PASSWORD=#{MYSQL_ROOT_PASSWORD}",
+#    "MYSQL_USER=#{MYSQL_USER}",
+#    "MYSQL_PASSWORD=#{MYSQL_PASSWORD}",
+#    "MYSQL_DATABASE=#{MYSQL_DATABASE}"
+#  ]
+#)
+#@container.start
 
 LISTEN_PORT=8080
 CONTAINER_START_DELAY=30
@@ -65,6 +65,6 @@ RSpec.configure do |c|
   end
 end
 
-@container.kill
-@container.delete
-@network.delete
+#@container.kill
+#@container.delete
+#@network.delete
