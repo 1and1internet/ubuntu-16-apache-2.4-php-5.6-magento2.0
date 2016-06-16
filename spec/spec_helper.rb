@@ -1,11 +1,11 @@
 require 'serverspec'
 require 'docker'
 
-#MYSQL_ROOT_PASSWORD="super-secret-password"
-#MYSQL_USER="fhmagentotest"
-#MYSQL_PASSWORD="super-secret-password1"
-#MYSQL_DATABASE="fhmagentotest"
-#MYSQL_HOST="mysqltesting"
+MYSQL_ROOT_PASSWORD="super-secret-password"
+MYSQL_USER="fhmagentotest"
+MYSQL_PASSWORD="super-secret-password1"
+MYSQL_DATABASE="fhmagentotest"
+MYSQL_HOST="mysqltesting"
 
 #Include Tests
 base_spec_dir = Pathname.new(File.join(File.dirname(__FILE__)))
@@ -42,9 +42,9 @@ RSpec.configure do |c|
   set :docker_image, @image.id
   set :docker_container_create_options, { 
       'User' => '100000', 
-      'Host Config'    => {
-         'NetworkMode' => @network.info["Name"],
-      },
+      #'Host Config'    => {
+      #   'NetworkMode' => @network.info["Name"],
+      #},
       'Env'            => [
         "WORDPRESS_DB_USER=#{MYSQL_USER}",
         "WORDPRESS_DB_PASSWORD=#{MYSQL_PASSWORD}",
