@@ -16,4 +16,3 @@ ENV MYSQL_USER=magento \
     MYSQL_PASSWORD=EnvVarHere \
     MYSQL_DATABASE=magento \
     MYSQL_HOST=mysql
-
