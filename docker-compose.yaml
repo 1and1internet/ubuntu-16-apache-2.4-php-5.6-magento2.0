@@ -21,7 +21,7 @@ services:
   mysql:
     hostname: mysql
     container_name: mysql
-    image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:unstable
+    image: 1and1internet/ubuntu-16-nginx-php-phpmyadmin-mysql-5:unstable
     ports:
       - "3306:3306"
       - "8081:8080"
