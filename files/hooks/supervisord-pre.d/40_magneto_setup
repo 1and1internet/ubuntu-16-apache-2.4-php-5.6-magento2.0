@@ -23,7 +23,7 @@ fi
 if ! [ -e "/var/www/html/Gruntfile.js" ]; then
   echo >&2 "Magento not found in /var/www/html - Installing!"
   #TODO:  Look for a better file than Gruntfile.js?  Couldn't find a specific version file to check
-  cd /var/www/html ; tar -jxf /usr/src/Magento-CE-2.0.7+sample_data-2016-05-24-01-28-33.tar.bz
+  cd /var/www/html ; tar -jxf /usr/src/Magento-CE-*.tar.bz
   #chown -R www-data. /var/www/html/*
   #Configure Database
   echo "DB Details: $MYSQL_DATABASE $MYSQL_USER [ $MYSQL_PASSWORD ] @ $MYSQL_HOST"
